@@ -1,0 +1,94 @@
+version: '3'
+
+services:
+
+  redis:
+    image: {{ redis_image_name }}
+    ports:
+      - "{{ redis_port }}"
+    networks:
+      - frontend
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+  db:
+    image: {{ db_image_name }}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - backend
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+  vote:
+    image: {{ vote_image_name }}
+    ports:
+      - {{ vote_base_port }}:{{ vote_container_port }}
+    networks:
+      - frontend
+    depends_on:
+      - redis
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 2
+      restart_policy:
+        condition: on-failure
+ 
+  result:
+    image: {{ result_image_name }}
+    ports:
+     - {{ result_base_port }}:{{ result_container_port }}
+    networks:
+      - backend
+    depends_on:
+      - db
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+  worker:
+    image: {{ worker_image_name }}
+    networks:
+      - frontend
+      - backend
+    deploy:
+      mode: replicated
+      replicas: 1
+      labels: [APP=VOTING]
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints: [node.role == manager]
+
+  visualizer:
+    image: {{ visualizer_image_name }}
+    ports:
+    - {{ visualizer_base_port }}:{{ visualizer_container_port }}
+    stop_grace_period: 1m30s
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+networks:
+    frontend:
+    backend:
+
+volumes:
+    db-data:
+

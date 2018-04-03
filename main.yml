@@ -1,0 +1,36 @@
+---
+
+- hosts: all
+#  gather_facts: no
+#  remote_user: administrator
+#  become: yes
+#  become_method: sudo
+  tasks:
+
+  - name: pull mysql image
+    docker_image:
+      name: mysql
+
+  - name: pull wordpress image
+    docker_image:
+      name: wordpress
+ 
+  - name: make a temporary directory
+    file:
+      path: "{{ docker_compose_dir }}"
+      state: directory
+      mode: 0755
+
+  - name: copy the docker-compose
+    template: src=docker-compose.yml dest="{{ docker_compose_dir }}"
+     
+  - name: Run compose
+    docker_service:
+        project_src: "{{ docker_compose_dir }}"
+        build: no
+        restarted: true
+     
+  - name: Clean target
+    file:
+      state: absent
+      path: "{{ docker_compose_dir }}"

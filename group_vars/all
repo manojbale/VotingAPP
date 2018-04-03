@@ -1,0 +1,27 @@
+---
+
+redis_image_name: redis:alpine
+redis_port: 6379
+
+
+db_image_name: postgres:9.4
+
+vote_image_name: dockersamples/examplevotingapp_vote:before
+vote_base_port: 5000
+vote_container_port: 80
+
+
+
+result_image_name: dockersamples/examplevotingapp_result:before
+result_base_port: 5001
+result_container_port: 80
+
+
+worker_image_name: dockersamples/examplevotingapp_worker
+
+visualizer_image_name: dockersamples/visualizer
+visualizer_base_port: 8081
+visualizer_container_port: 8080
+
+
+
