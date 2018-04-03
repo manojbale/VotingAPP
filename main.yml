@@ -5,6 +5,7 @@
 #  remote_user: administrator
 #  become: yes
 #  become_method: sudo
+# adding a comment
   tasks:
 
   - name: pull mysql image
