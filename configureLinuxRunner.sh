@@ -17,7 +17,7 @@ curl -O -L https://github.com/actions/runner/releases/download/v2.311.0/actions-
 
 tar xzf ./actions-runner-linux-x64-2.311.0.tar.gz
 
-./config.sh --url "https://github.com/$GITHUBORG" --token $GITHUBTOKEN --runasservice --unattended --replace
+./config.sh --url "https://github.com/$GITHUBORG/jpetstore" --token $GITHUBTOKEN --runasservice --unattended --replace
 
 echo "Configured"
 
